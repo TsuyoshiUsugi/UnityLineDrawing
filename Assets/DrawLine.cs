@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class DrawLine : MonoBehaviour
 {
-    LineRenderer _renderer;
+    int _posCount = 0;
     Camera _camera;
+    LineRenderer _renderer;
     Vector2 _mousePos = Vector2.zero;
 
 
@@ -21,12 +22,27 @@ public class DrawLine : MonoBehaviour
     {
         _mousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
 
-        if (Input.GetMouseButton(0)) SetLinePos(_mousePos);
+        if (Input.GetMouseButton(0)) LineDraw(_mousePos);
+        if (Input.GetMouseButtonUp(0)) _posCount = 0;
     }
 
-    void SetLinePos(Vector2 pos)
+    /// <summary>
+    /// 線を引く
+    /// </summary>
+    /// <param name="pos"></param>
+    void LineDraw(Vector2 pos)
     {
-        _renderer.positionCount++;
+        _posCount++;
+        _renderer.positionCount = _posCount;
         _renderer.SetPosition(_renderer.positionCount - 1, pos);
+    }
+
+    /// <summary>
+    /// 現在引かれているラインの情報を新しいオブジェクトにコピーして写す
+    /// これで一度引かれたラインを画面上に残す
+    /// </summary>
+    void SetLine()
+    {
+
     }
 }
