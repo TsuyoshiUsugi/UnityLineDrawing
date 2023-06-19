@@ -9,6 +9,7 @@ public class DrawLine : MonoBehaviour
     Camera _camera;
     LineRenderer _renderer;
     Vector2 _mousePos = Vector2.zero;
+    Vector2 _prePos = Vector2.zero;
 
 
     // Start is called before the first frame update
@@ -37,9 +38,12 @@ public class DrawLine : MonoBehaviour
     /// <param name="pos"></param>
     void LineDraw(Vector2 pos)
     {
+        if (_prePos == pos) return;
+
         _posCount++;
         _renderer.positionCount = _posCount;
         _renderer.SetPosition(_renderer.positionCount - 1, pos);
+        _prePos = pos;
     }
 
     /// <summary>
@@ -48,15 +52,27 @@ public class DrawLine : MonoBehaviour
     /// </summary>
     void SetLine()
     {
-        //コピー処理
-        var obj = new GameObject();
-        obj.AddComponent<LineRenderer>();
-        obj.TryGetComponent(out LineRenderer rend);
-        rend.positionCount = _posCount;
+        //コピー先の準備
+        var newObj = new GameObject();
+        newObj.AddComponent<LineRenderer>();
+        newObj.TryGetComponent(out LineRenderer newObjRenderer);
+        newObjRenderer.positionCount = _posCount;
+        newObjRenderer.material = _renderer.material;
+        newObjRenderer.numCornerVertices = _renderer.numCornerVertices;
+        newObjRenderer.numCapVertices = _renderer.numCapVertices;
+        newObjRenderer.widthCurve = _renderer.widthCurve;
+
+
+        var positions = new List<Vector3>();
 
         for (int i = 0; i < _renderer.positionCount; i++)
         {
-            _renderer.SetPosition(i, _renderer.GetPosition(i));
+            positions.Add(_renderer.GetPosition(i));
+        }
+
+        for (int i = 0; i < positions.Count; i++)
+        {
+            newObjRenderer.SetPosition(i, positions[i]);
         }
 
         //リセット処理
