@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class DrawLine : MonoBehaviour
 {
@@ -23,7 +24,11 @@ public class DrawLine : MonoBehaviour
         _mousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
 
         if (Input.GetMouseButton(0)) LineDraw(_mousePos);
-        if (Input.GetMouseButtonUp(0)) _posCount = 0;
+        if (Input.GetMouseButtonUp(0))
+        {
+            SetLine();
+            _posCount = 0;
+        }
     }
 
     /// <summary>
@@ -43,6 +48,18 @@ public class DrawLine : MonoBehaviour
     /// </summary>
     void SetLine()
     {
+        //コピー処理
+        var obj = new GameObject();
+        obj.AddComponent<LineRenderer>();
+        obj.TryGetComponent(out LineRenderer rend);
+        rend.positionCount = _posCount;
 
+        for (int i = 0; i < _renderer.positionCount; i++)
+        {
+            _renderer.SetPosition(i, _renderer.GetPosition(i));
+        }
+
+        //リセット処理
+        _renderer.positionCount = 0;
     }
 }
